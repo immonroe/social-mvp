@@ -40,21 +40,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     }
   }
 
-  const handleDemoLogin = async () => {
-    setIsLoading(true)
+  const handleDemoLogin = () => {
+    setEmail('test@test.com')
+    setPassword('test123')
     setError('')
-    try {
-      const { error } = await auth.demoSignIn()
-      if (error) {
-        setError(error.message)
-      } else {
-        onSuccess?.()
-      }
-    } catch {
-      setError('Demo login failed')
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   return (
@@ -103,9 +92,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         variant="outline" 
         className="w-full" 
         onClick={handleDemoLogin}
-        isLoading={isLoading}
+        type="button"
       >
-        Try Demo Account
+        Fill Demo Account
       </Button>
     </div>
   )

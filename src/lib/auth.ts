@@ -35,12 +35,45 @@ export const auth = {
 
   // Demo account credentials (for testing)
   demoSignIn: async () => {
-    // This will be configured with a demo account in Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: 'demo@social-mvp.com',
-      password: 'demo123456',
-    })
-    return { data, error }
+    const DEMO_EMAIL = 'test@test.com'
+    const DEMO_PASSWORD = 'test123'
+    
+    try {
+      // First try to sign in with demo credentials
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+      })
+
+      if (error) {
+        // If demo account doesn't exist, create it
+        if (error.message.includes('Invalid login credentials')) {
+          console.log('Creating demo account...')
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: DEMO_EMAIL,
+            password: DEMO_PASSWORD,
+          })
+
+          if (signUpError) {
+            return { data: null, error: signUpError }
+          }
+
+          // If signup was successful, try to sign in again
+          return await supabase.auth.signInWithPassword({
+            email: DEMO_EMAIL,
+            password: DEMO_PASSWORD,
+          })
+        }
+        return { data, error }
+      }
+
+      return { data, error }
+    } catch (err) {
+      return { 
+        data: null, 
+        error: { message: 'Demo login failed. Please try again.' } 
+      }
+    }
   },
 
   // Listen to auth state changes
