@@ -13,7 +13,6 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         error: `Direct bucket access error: ${error.message}`,
-        errorCode: error.statusCode,
         bucketAccessible: false
       })
     }

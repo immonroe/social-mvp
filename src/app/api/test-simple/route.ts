@@ -19,7 +19,7 @@ export async function GET() {
     const supabase = createClient(supabaseUrl, supabaseKey)
     
     // Simple ping test - just check if we can connect
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('boards')
       .select('count')
       .limit(0)
