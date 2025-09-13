@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { PlusIcon } from 'lucide-react'
 
@@ -7,15 +8,19 @@ export default function Home() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-red-500">PinBoard</h1>
+            <Link href="/" className="text-2xl font-bold text-red-500">PinBoard</Link>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                Login
-              </Button>
-              <Button size="sm">
-                <PlusIcon className="w-4 h-4 mr-2" />
-                Create
-              </Button>
+              <Link href="/auth/login">
+                <Button variant="outline" size="sm">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button size="sm">
+                  <PlusIcon className="w-4 h-4 mr-2" />
+                  Sign Up
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
