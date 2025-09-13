@@ -5,24 +5,34 @@ const STORAGE_BUCKET = 'images'
 // File upload and storage utilities
 export const storage = {
   // Upload an image file
-  uploadImage: async (file: File, userId: string): Promise<{ url: string; filename: string }> => {
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${userId}/${Date.now()}.${fileExt}`
-    
-    const { error } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .upload(fileName, file)
-    
-    if (error) throw error
-    
-    // Get the public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from(STORAGE_BUCKET)
-      .getPublicUrl(fileName)
-    
-    return {
-      url: publicUrl,
-      filename: fileName,
+  uploadImage: async (file: File, userId?: string): Promise<{ success: boolean; url?: string; filename?: string; error?: string }> => {
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${userId || 'demo'}/${Date.now()}.${fileExt}`
+      
+      const { error } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .upload(fileName, file)
+      
+      if (error) {
+        return { success: false, error: error.message }
+      }
+      
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(fileName)
+      
+      return {
+        success: true,
+        url: publicUrl,
+        filename: fileName,
+      }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Upload failed' 
+      }
     }
   },
 

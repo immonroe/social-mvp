@@ -15,10 +15,10 @@ export default function Home() {
                   Login
                 </Button>
               </Link>
-              <Link href="/auth/signup">
+              <Link href="/upload">
                 <Button size="sm">
                   <PlusIcon className="w-4 h-4 mr-2" />
-                  Sign Up
+                  Upload
                 </Button>
               </Link>
             </div>
