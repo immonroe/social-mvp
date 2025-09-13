@@ -80,6 +80,28 @@ const SAMPLE_IMAGES = [
   { id: 48, url: 'https://picsum.photos/600/1000?random=48', title: 'Family Photo Ideas', category: 'Family Photography' },
   { id: 49, url: 'https://picsum.photos/600/740?random=49', title: 'DIY Kids Crafts', category: 'Kids Crafts' },
   { id: 50, url: 'https://picsum.photos/600/900?random=50', title: 'Healthy Kids Snacks', category: 'Kids Food' },
+  
+  // Additional images for better screen coverage
+  { id: 51, url: 'https://picsum.photos/600/800?random=51', title: 'Minimalist Design', category: 'Design' },
+  { id: 52, url: 'https://picsum.photos/600/950?random=52', title: 'Vintage Style', category: 'Vintage' },
+  { id: 53, url: 'https://picsum.photos/600/750?random=53', title: 'Modern Architecture', category: 'Architecture' },
+  { id: 54, url: 'https://picsum.photos/600/850?random=54', title: 'Nature Photography', category: 'Nature' },
+  { id: 55, url: 'https://picsum.photos/600/900?random=55', title: 'Abstract Art', category: 'Art' },
+  { id: 56, url: 'https://picsum.photos/600/780?random=56', title: 'Street Photography', category: 'Photography' },
+  { id: 57, url: 'https://picsum.photos/600/920?random=57', title: 'Interior Design', category: 'Interior' },
+  { id: 58, url: 'https://picsum.photos/600/820?random=58', title: 'Fashion Styling', category: 'Fashion' },
+  { id: 59, url: 'https://picsum.photos/600/880?random=59', title: 'Food Photography', category: 'Food' },
+  { id: 60, url: 'https://picsum.photos/600/760?random=60', title: 'Travel Destinations', category: 'Travel' },
+  { id: 61, url: 'https://picsum.photos/600/940?random=61', title: 'Wedding Ideas', category: 'Wedding' },
+  { id: 62, url: 'https://picsum.photos/600/800?random=62', title: 'DIY Projects', category: 'DIY' },
+  { id: 63, url: 'https://picsum.photos/600/860?random=63', title: 'Garden Design', category: 'Gardening' },
+  { id: 64, url: 'https://picsum.photos/600/900?random=64', title: 'Beauty Tips', category: 'Beauty' },
+  { id: 65, url: 'https://picsum.photos/600/780?random=65', title: 'Tech Gadgets', category: 'Technology' },
+  { id: 66, url: 'https://picsum.photos/600/920?random=66', title: 'Fitness Ideas', category: 'Fitness' },
+  { id: 67, url: 'https://picsum.photos/600/840?random=67', title: 'Craft Ideas', category: 'Crafts' },
+  { id: 68, url: 'https://picsum.photos/600/880?random=68', title: 'Home Organization', category: 'Organization' },
+  { id: 69, url: 'https://picsum.photos/600/760?random=69', title: 'Pet Care', category: 'Pets' },
+  { id: 70, url: 'https://picsum.photos/600/900?random=70', title: 'Holiday Decor', category: 'Holidays' },
 ]
 
 export function ImageGrid() {
@@ -120,7 +142,7 @@ export function ImageGrid() {
           </div>
         </div>
       ) : (
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-6 space-y-6">
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4 space-y-4">
           {pins.map((pin) => (
             <div 
               key={pin.id} 
@@ -158,11 +180,7 @@ export function ImageGrid() {
                 </div>
               </div>
               
-              {/* Pin content */}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{pin.title}</h3>
-                <p className="text-xs text-gray-500">Saved by you</p>
-              </div>
+              {/* Pin content - removed title for cleaner look */}
             </div>
           ))}
         </div>
@@ -171,7 +189,7 @@ export function ImageGrid() {
       {/* Sample Images Section */}
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Ideas for you</h2>
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-6 space-y-6">
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4 space-y-4">
           {SAMPLE_IMAGES.map((image) => (
             <div 
               key={image.id} 
@@ -209,11 +227,7 @@ export function ImageGrid() {
                 </div>
               </div>
               
-              {/* Pinterest-style card content */}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{image.title}</h3>
-                <p className="text-xs text-gray-500">{image.category}</p>
-              </div>
+              {/* Pinterest-style card content - removed title for cleaner look */}
             </div>
           ))}
         </div>

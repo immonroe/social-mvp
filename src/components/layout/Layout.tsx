@@ -1,20 +1,25 @@
 'use client'
 
-import { Header } from './Header'
+import { Sidebar } from './Sidebar'
+import { TopSearchBar } from './TopSearchBar'
 import { cn } from '@/lib/utils'
 
 interface LayoutProps {
   children: React.ReactNode
   className?: string
+  showSearchBar?: boolean
 }
 
-export function Layout({ children, className }: LayoutProps) {
+export function Layout({ children, className, showSearchBar = true }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <main className={cn('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8', className)}>
-        {children}
-      </main>
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar />
+      <div className="flex-1 ml-16 flex flex-col">
+        {showSearchBar && <TopSearchBar />}
+        <main className={cn('flex-1', className)}>
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
