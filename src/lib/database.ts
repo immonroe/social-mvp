@@ -9,6 +9,7 @@ type Image = Database['public']['Tables']['images']['Row']
 type ImageInsert = Database['public']['Tables']['images']['Insert']
 
 type BoardPin = Database['public']['Tables']['board_pins']['Row']
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type BoardPinInsert = Database['public']['Tables']['board_pins']['Insert']
 
 // Board operations
