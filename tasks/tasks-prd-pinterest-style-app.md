@@ -56,8 +56,8 @@
   - [x] 1.2 Install and configure Supabase client library
   - [x] 1.3 Set up environment variables for Supabase connection
   - [x] 1.4 Configure Next.js for image optimization and external domains
-  - [ ] 1.5 Set up basic folder structure for components, pages, and utilities
-  - [ ] 1.6 Install additional dependencies (clsx, lucide-react for icons)
+  - [x] 1.5 Set up basic folder structure for components, pages, and utilities
+  - [x] 1.6 Install additional dependencies (clsx, lucide-react for icons)
 
 - [ ] 2.0 **Database Schema and Supabase Configuration**
   - [ ] 2.1 Create users table (if extending Supabase auth.users)
