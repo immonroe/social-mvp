@@ -49,7 +49,7 @@ export const auth = {
         // If demo account doesn't exist, create it
         if (error.message.includes('Invalid login credentials')) {
           console.log('Creating demo account...')
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          const { error: signUpError } = await supabase.auth.signUp({
             email: DEMO_EMAIL,
             password: DEMO_PASSWORD,
           })
@@ -68,7 +68,7 @@ export const auth = {
       }
 
       return { data, error }
-    } catch (err) {
+    } catch {
       return { 
         data: null, 
         error: { message: 'Demo login failed. Please try again.' } 
