@@ -13,11 +13,14 @@ export default function BoardsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="text-2xl font-bold text-red-500">PinBoard</Link>
-            <Button onClick={() => setShowCreateBoard(true)}>
+            <Link href="/" className="text-2xl font-bold text-pinterest-red flex items-center">
+              <span className="text-3xl">📌</span>
+              <span className="ml-2">PinBoard</span>
+            </Link>
+            <Button onClick={() => setShowCreateBoard(true)} className="btn-pinterest">
               <PlusIcon className="w-4 h-4 mr-2" />
               Create Board
             </Button>
@@ -49,39 +52,38 @@ export default function BoardsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {boards.map((board) => (
-              <div key={board.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
-                <div className="aspect-[3/2] bg-gray-100 relative">
-                  {board.coverImage ? (
-                    <img src={board.coverImage} alt={board.name} className="w-full h-full object-cover" />
-                  ) : (
+              <Link key={board.id} href={`/boards/${board.id}`}>
+                <div className="bg-white rounded-2xl overflow-hidden pinterest-card group cursor-pointer">
+                  <div className="aspect-[3/2] bg-pinterest-light relative">
                     <div className="w-full h-full flex items-center justify-center">
-                      <Grid3X3 className="w-12 h-12 text-gray-300" />
+                      <Grid3X3 className="w-12 h-12 text-pinterest-tertiary" />
                     </div>
-                  )}
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="bg-white/90 hover:bg-white text-red-600 hover:text-red-700"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (confirm(`Delete "${board.name}" board?`)) {
-                          deleteBoard(board.id)
-                        }
-                      }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="bg-white/90 hover:bg-white text-pinterest-red hover:text-pinterest-red-hover"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          if (confirm(`Delete "${board.name}" board?`)) {
+                            deleteBoard(board.id)
+                          }
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 text-lg mb-1">{board.name}</h3>
+                    <p className="text-sm text-pinterest-secondary">0 pins</p>
+                    {board.description && (
+                      <p className="text-sm text-pinterest-tertiary mt-1 line-clamp-2">{board.description}</p>
+                    )}
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900">{board.name}</h3>
-                  <p className="text-sm text-gray-500">{board.pinCount} pins</p>
-                  {board.description && (
-                    <p className="text-sm text-gray-600 mt-1 truncate">{board.description}</p>
-                  )}
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
@@ -91,8 +93,8 @@ export default function BoardsPage() {
       <CreateBoardModal
         isOpen={showCreateBoard}
         onClose={() => setShowCreateBoard(false)}
-        onCreateBoard={(name, description) => {
-          createBoard(name, description)
+        onCreateBoard={async (name, description) => {
+          await createBoard(name, description)
           alert(`Board "${name}" created successfully!`)
         }}
       />

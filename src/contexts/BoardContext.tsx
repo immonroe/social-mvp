@@ -1,16 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useAuth } from './AuthContext'
-
-interface Board {
-  id: string
-  name: string
-  description: string
-  pinCount: number
-  coverImage?: string
-  createdAt: Date
-}
+import { boards, images, pins } from '@/lib/database'
+import type { Board } from '@/types'
 
 interface Pin {
   id: string
@@ -23,131 +16,175 @@ interface Pin {
 interface BoardContextType {
   boards: Board[]
   pins: Pin[]
-  createBoard: (name: string, description: string) => void
-  deleteBoard: (boardId: string) => void
-  savePinToBoard: (pinId: string, boardId: string, imageUrl: string, title: string) => void
-  removePinFromBoard: (pinId: string, boardId: string) => void
+  createBoard: (name: string, description: string) => Promise<void>
+  deleteBoard: (boardId: string) => Promise<void>
+  savePinToBoard: (pinId: string, boardId: string, imageUrl: string, title: string) => Promise<void>
+  removePinFromBoard: (pinId: string, boardId: string) => Promise<void>
   addComment: (pinId: string, comment: string) => void
   comments: Record<string, Array<{id: string, author: string, text: string, createdAt: Date}>>
+  loading: boolean
+  error: string | null
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
 
 export function BoardProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
-  const [boards, setBoards] = useState<Board[]>([])
-  const [pins, setPins] = useState<Pin[]>([])
+  const [boardsData, setBoardsData] = useState<Board[]>([])
+  const [pinsData, setPinsData] = useState<Pin[]>([])
   const [comments, setComments] = useState<Record<string, Array<{id: string, author: string, text: string, createdAt: Date}>>>({})
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Initialize with sample data
-  useEffect(() => {
-    if (user) {
-      setBoards([
-        {
-          id: '1',
-          name: 'Travel Inspiration',
-          description: 'Places I want to visit',
-          pinCount: 24,
-          coverImage: 'https://picsum.photos/id/10/300/200',
-          createdAt: new Date()
-        },
-        {
-          id: '2',
-          name: 'Home Decor',
-          description: 'Interior design ideas',
-          pinCount: 18,
-          coverImage: 'https://picsum.photos/id/20/300/200',
-          createdAt: new Date()
-        },
-        {
-          id: '3',
-          name: 'Recipe Ideas',
-          description: 'Delicious meals to try',
-          pinCount: 32,
-          coverImage: 'https://picsum.photos/id/30/300/200',
-          createdAt: new Date()
-        },
-        {
-          id: '4',
-          name: 'Art & Design',
-          description: 'Creative inspiration',
-          pinCount: 15,
-          coverImage: 'https://picsum.photos/id/40/300/200',
-          createdAt: new Date()
-        },
-      ])
+  const loadUserData = useCallback(async () => {
+    if (!user) return
+    
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // Load boards
+      const userBoards = await boards.getByUserId(user.id)
+      setBoardsData(userBoards)
 
-      // Initialize sample comments
-      setComments({
-        '1': [
-          { id: '1', author: 'john_doe', text: 'Beautiful shot! Love the composition.', createdAt: new Date() },
-          { id: '2', author: 'sarah_m', text: 'Adding this to my inspiration board!', createdAt: new Date() }
-        ]
+      // Load images
+      const userImages = await images.getByUserId(user.id)
+      setPinsData(userImages.map(img => ({
+        id: img.id,
+        imageUrl: img.url,
+        title: img.filename,
+        boardIds: [], // Will be populated when we load board pins
+        createdAt: new Date(img.created_at)
+      })))
+
+      // Load board pins to populate boardIds for each pin
+      const boardPinsPromises = userBoards.map(async (board) => {
+        const boardPins = await pins.getByBoardId(board.id)
+        return { boardId: board.id, pins: boardPins }
       })
+      
+      const allBoardPins = await Promise.all(boardPinsPromises)
+      
+      // Update pins with their board associations
+      setPinsData(prevPins => 
+        prevPins.map(pin => {
+          const associatedBoards = allBoardPins
+            .filter(bp => bp.pins.some(p => p.image_id === pin.id))
+            .map(bp => bp.boardId)
+          return { ...pin, boardIds: associatedBoards }
+        })
+      )
+
+    } catch (err) {
+      console.error('Error loading user data:', err)
+      setError(err instanceof Error ? err.message : 'Failed to load data')
+    } finally {
+      setLoading(false)
     }
   }, [user])
 
-  const createBoard = (name: string, description: string) => {
-    const newBoard: Board = {
-      id: Date.now().toString(),
-      name,
-      description,
-      pinCount: 0,
-      createdAt: new Date()
-    }
-    setBoards(prev => [...prev, newBoard])
-  }
-
-  const deleteBoard = (boardId: string) => {
-    setBoards(prev => prev.filter(board => board.id !== boardId))
-    // Also remove pins from this board
-    setPins(prev => prev.map(pin => ({
-      ...pin,
-      boardIds: pin.boardIds.filter(id => id !== boardId)
-    })))
-  }
-
-  const savePinToBoard = (pinId: string, boardId: string, imageUrl: string, title: string) => {
-    // Check if pin exists, if not create it
-    const existingPin = pins.find(p => p.id === pinId)
-    if (!existingPin) {
-      const newPin: Pin = {
-        id: pinId,
-        imageUrl,
-        title,
-        boardIds: [boardId],
-        createdAt: new Date()
-      }
-      setPins(prev => [...prev, newPin])
+  // Load boards and pins when user changes
+  useEffect(() => {
+    if (user) {
+      loadUserData()
     } else {
-      // Add board to existing pin if not already added
-      setPins(prev => prev.map(pin => 
+      setBoardsData([])
+      setPinsData([])
+      setComments({})
+    }
+  }, [user, loadUserData])
+
+  const createBoard = async (name: string, description: string) => {
+    if (!user) return
+    
+    try {
+      const newBoard = await boards.create({
+        user_id: user.id,
+        name,
+        description: description || null
+      })
+      setBoardsData(prev => [...prev, newBoard])
+    } catch (err) {
+      console.error('Error creating board:', err)
+      setError(err instanceof Error ? err.message : 'Failed to create board')
+    }
+  }
+
+  const deleteBoard = async (boardId: string) => {
+    try {
+      await boards.delete(boardId)
+      setBoardsData(prev => prev.filter(board => board.id !== boardId))
+      
+      // Also remove pins from this board
+      setPinsData(prev => prev.map(pin => ({
+        ...pin,
+        boardIds: pin.boardIds.filter(id => id !== boardId)
+      })))
+    } catch (err) {
+      console.error('Error deleting board:', err)
+      setError(err instanceof Error ? err.message : 'Failed to delete board')
+    }
+  }
+
+  const savePinToBoard = async (pinId: string, boardId: string, imageUrl: string, title: string) => {
+    if (!user) return
+    
+    try {
+      // Check if pin exists, if not create it
+      const existingPin = pinsData.find(p => p.id === pinId)
+      if (!existingPin) {
+        // Create new image record
+        const newImage = await images.create({
+          user_id: user.id,
+          filename: title,
+          url: imageUrl
+        })
+        
+        const newPin: Pin = {
+          id: newImage.id,
+          imageUrl: newImage.url,
+          title: newImage.filename,
+          boardIds: [boardId],
+          createdAt: new Date(newImage.created_at)
+        }
+        setPinsData(prev => [...prev, newPin])
+      }
+
+      // Save pin to board
+      await pins.saveToBoard(boardId, pinId)
+      
+      // Update local state
+      setPinsData(prev => prev.map(pin => 
         pin.id === pinId 
           ? { ...pin, boardIds: [...new Set([...pin.boardIds, boardId])] }
           : pin
       ))
-    }
 
-    // Update board pin count
-    setBoards(prev => prev.map(board => 
-      board.id === boardId 
-        ? { ...board, pinCount: board.pinCount + 1, coverImage: board.coverImage || imageUrl }
-        : board
-    ))
+      // Reload boards to get updated pin counts
+      await loadUserData()
+    } catch (err) {
+      console.error('Error saving pin to board:', err)
+      setError(err instanceof Error ? err.message : 'Failed to save pin to board')
+    }
   }
 
-  const removePinFromBoard = (pinId: string, boardId: string) => {
-    setPins(prev => prev.map(pin => 
-      pin.id === pinId 
-        ? { ...pin, boardIds: pin.boardIds.filter(id => id !== boardId) }
-        : pin
-    ))
+  const removePinFromBoard = async (pinId: string, boardId: string) => {
+    try {
+      await pins.removeFromBoard(boardId, pinId)
+      
+      // Update local state
+      setPinsData(prev => prev.map(pin => 
+        pin.id === pinId 
+          ? { ...pin, boardIds: pin.boardIds.filter(id => id !== boardId) }
+          : pin
+      ))
 
-    setBoards(prev => prev.map(board => 
-      board.id === boardId 
-        ? { ...board, pinCount: Math.max(0, board.pinCount - 1) }
-        : board
-    ))
+      // Reload boards to get updated pin counts
+      await loadUserData()
+    } catch (err) {
+      console.error('Error removing pin from board:', err)
+      setError(err instanceof Error ? err.message : 'Failed to remove pin from board')
+    }
   }
 
   const addComment = (pinId: string, comment: string) => {
@@ -165,14 +202,16 @@ export function BoardProvider({ children }: { children: React.ReactNode }) {
   }
 
   const value = {
-    boards,
-    pins,
+    boards: boardsData,
+    pins: pinsData,
     createBoard,
     deleteBoard,
     savePinToBoard,
     removePinFromBoard,
     addComment,
-    comments
+    comments,
+    loading,
+    error
   }
 
   return (

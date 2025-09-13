@@ -1,40 +1,47 @@
 'use client'
 
-import { useState } from 'react'
-import { Modal } from './ui/Modal'
-import { Button } from './ui/Button'
-import { Input } from './ui/Input'
+import { useState, useEffect } from 'react'
+import { Modal } from '../ui/Modal'
+import { Button } from '../ui/Button'
+import { Input } from '../ui/Input'
+import type { Board } from '@/types'
 
-interface CreateBoardModalProps {
+interface EditBoardModalProps {
   isOpen: boolean
   onClose: () => void
-  onCreateBoard: (name: string, description: string) => Promise<void>
+  onUpdateBoard: (id: string, name: string, description: string) => Promise<void>
+  board: Board | null
 }
 
-export function CreateBoardModal({ isOpen, onClose, onCreateBoard }: CreateBoardModalProps) {
+export function EditBoardModal({ isOpen, onClose, onUpdateBoard, board }: EditBoardModalProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  useEffect(() => {
+    if (board) {
+      setName(board.name)
+      setDescription(board.description || '')
+    }
+  }, [board])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) return
+    if (!board || !name.trim()) return
 
     setIsLoading(true)
     try {
-      await onCreateBoard(name.trim(), description.trim())
-      setName('')
-      setDescription('')
+      await onUpdateBoard(board.id, name.trim(), description.trim())
       onClose()
     } catch (error) {
-      console.error('Failed to create board:', error)
+      console.error('Failed to update board:', error)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create Board">
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit Board">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -67,7 +74,7 @@ export function CreateBoardModal({ isOpen, onClose, onCreateBoard }: CreateBoard
             Cancel
           </Button>
           <Button type="submit" isLoading={isLoading}>
-            Create Board
+            Update Board
           </Button>
         </div>
       </form>

@@ -12,15 +12,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+          'inline-flex items-center justify-center font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pinterest-red focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
           {
-            'bg-red-500 text-white hover:bg-red-600': variant === 'primary',
-            'bg-gray-100 text-gray-900 hover:bg-gray-200': variant === 'secondary',
-            'border border-gray-300 bg-white hover:bg-gray-50': variant === 'outline',
-            'hover:bg-gray-100': variant === 'ghost',
-            'h-8 px-3 text-sm': size === 'sm',
-            'h-10 px-4': size === 'md',
-            'h-12 px-6 text-lg': size === 'lg',
+            'bg-pinterest-red text-white hover:bg-pinterest-red-hover rounded-full shadow-sm hover:shadow-md hover:-translate-y-0.5': variant === 'primary',
+            'bg-gray-100 text-gray-900 hover:bg-gray-200 rounded-full': variant === 'secondary',
+            'border-2 border-pinterest text-gray-700 bg-white hover:bg-gray-50 rounded-full': variant === 'outline',
+            'hover:bg-gray-100 rounded-full': variant === 'ghost',
+            'h-8 px-4 text-sm': size === 'sm',
+            'h-10 px-6 text-sm': size === 'md',
+            'h-12 px-8 text-base': size === 'lg',
           },
           className
         )}

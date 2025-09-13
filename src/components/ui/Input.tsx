@@ -11,7 +11,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="w-full">
         <input
           className={cn(
-            'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:cursor-not-allowed disabled:opacity-50',
+            'flex h-12 w-full rounded-full border-2 border-pinterest bg-white px-4 py-3 text-base placeholder:text-pinterest-tertiary focus:outline-none focus:ring-2 focus:ring-pinterest-red focus:border-pinterest-red disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200',
             error && 'border-red-500 focus:ring-red-500',
             className
           )}

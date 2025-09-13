@@ -76,17 +76,13 @@ export default function ProfilePage() {
               boards.map((board) => (
                 <div key={board.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
                   <div className="aspect-[3/2] bg-gray-100">
-                    {board.coverImage ? (
-                      <img src={board.coverImage} alt={board.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Grid3X3 className="w-8 h-8 text-gray-300" />
-                      </div>
-                    )}
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Grid3X3 className="w-8 h-8 text-gray-300" />
+                    </div>
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900">{board.name}</h3>
-                    <p className="text-sm text-gray-500">{board.pinCount} pins</p>
+                    <p className="text-sm text-gray-500">0 pins</p>
                   </div>
                 </div>
               ))

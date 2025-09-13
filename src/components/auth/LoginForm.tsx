@@ -40,10 +40,41 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     }
   }
 
-  const handleDemoLogin = () => {
+  const handleDemoLogin = async () => {
     setEmail('test@test.com')
     setPassword('test123')
     setError('')
+    
+    // Auto-submit the demo login
+    setIsLoading(true)
+    try {
+      const { error } = await auth.signIn('test@test.com', 'test123')
+      if (error) {
+        // If demo account doesn't exist, try to create it
+        if (error.message.includes('Invalid login credentials')) {
+          const { error: signUpError } = await auth.signUp('test@test.com', 'test123')
+          if (signUpError) {
+            setError(signUpError.message)
+          } else {
+            // Try to sign in again after creating the account
+            const { error: signInError } = await auth.signIn('test@test.com', 'test123')
+            if (signInError) {
+              setError(signInError.message)
+            } else {
+              onSuccess?.()
+            }
+          }
+        } else {
+          setError(error.message)
+        }
+      } else {
+        onSuccess?.()
+      }
+    } catch {
+      setError('Demo login failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -93,8 +124,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         className="w-full" 
         onClick={handleDemoLogin}
         type="button"
+        isLoading={isLoading}
       >
-        Fill Demo Account
+        Try Demo Account
       </Button>
     </div>
   )

@@ -8,6 +8,7 @@ import { ImageUpload } from '@/components/ui/ImageUpload'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { storage } from '@/lib/storage'
+import { images } from '@/lib/database'
 import { PlusIcon, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
@@ -48,13 +49,15 @@ export default function UploadPage() {
   }
 
   const handleUpload = async (files: File[]) => {
+    if (!user) return
+    
     setIsUploading(true)
     setUploadProgress(0)
     setUploadedImages([])
 
     try {
       const uploadPromises = files.map(async (file, index) => {
-        const result = await storage.uploadImage(file, 'demo')
+        const result = await storage.uploadImage(file, user.id)
         setUploadProgress(((index + 1) / files.length) * 100)
         return result
       })
@@ -62,7 +65,20 @@ export default function UploadPage() {
       const results = await Promise.all(uploadPromises)
       const successfulUploads = results.filter(result => result.success)
       
-      setUploadedImages(successfulUploads.map(result => result.url!))
+      // Save successful uploads to database
+      const imagePromises = successfulUploads.map(async (result) => {
+        if (result.url && result.filename) {
+          await images.create({
+            user_id: user.id,
+            filename: result.filename,
+            url: result.url
+          })
+        }
+        return result.url
+      })
+      
+      const uploadedUrls = await Promise.all(imagePromises)
+      setUploadedImages(uploadedUrls.filter(url => url !== undefined) as string[])
       setShowSuccessModal(true)
     } catch (error) {
       console.error('Upload failed:', error)
