@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Modal } from './ui/Modal'
 import { Button } from './ui/Button'
+import { CreateBoardModal } from './CreateBoardModal'
+import { useBoards } from '@/contexts/BoardContext'
 import { Heart, Bookmark, Share } from 'lucide-react'
 
 // Fixed image IDs to ensure consistency between grid and modal views
@@ -62,6 +64,9 @@ const SAMPLE_IMAGES = [
 
 export function ImageGrid() {
   const [selectedImage, setSelectedImage] = useState<typeof SAMPLE_IMAGES[0] | null>(null)
+  const [showCreateBoard, setShowCreateBoard] = useState(false)
+  const [comment, setComment] = useState('')
+  const { boards, createBoard, savePinToBoard, addComment, comments } = useBoards()
 
   return (
     <>
