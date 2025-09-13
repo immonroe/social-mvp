@@ -16,9 +16,9 @@ export function Layout({ children, className, showSearchBar = true }: LayoutProp
       <Sidebar />
       <div className="flex-1 ml-16 flex flex-col">
         {showSearchBar && <TopSearchBar />}
-        <main className={cn('flex-1', className)}>
-          {children}
-        </main>
+               <main id="main-content" className={cn('flex-1', className)}>
+                 {children}
+               </main>
       </div>
     </div>
   )

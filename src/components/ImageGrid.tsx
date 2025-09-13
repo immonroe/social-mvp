@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Modal } from './ui/Modal'
+import { SwipeableImageModal } from './ui/SwipeableImageModal'
 import { Button } from './ui/Button'
 import { CreateBoardModal } from './CreateBoardModal'
 import { useBoards } from '@/contexts/BoardContext'
@@ -106,6 +107,7 @@ const SAMPLE_IMAGES = [
 
 export function ImageGrid() {
   const [selectedImage, setSelectedImage] = useState<{id: string | number, imageUrl?: string, url?: string, title: string, category?: string} | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [showCreateBoard, setShowCreateBoard] = useState(false)
   const [comment, setComment] = useState('')
   const { boards, pins, createBoard, savePinToBoard, addComment, comments, loading } = useBoards()
@@ -147,7 +149,10 @@ export function ImageGrid() {
             <div 
               key={pin.id} 
               className="break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
-              onClick={() => setSelectedImage(pin)}
+              onClick={() => {
+                setSelectedImage(pin)
+                setSelectedImageIndex(pins.findIndex(p => p.id === pin.id))
+              }}
             >
               <div className="relative">
                 <Image
@@ -194,7 +199,10 @@ export function ImageGrid() {
             <div 
               key={image.id} 
               className="break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
-              onClick={() => setSelectedImage(image)}
+              onClick={() => {
+                setSelectedImage(image)
+                setSelectedImageIndex(SAMPLE_IMAGES.findIndex(img => img.id === image.id))
+              }}
             >
               <div className="relative">
                 <Image
@@ -233,150 +241,24 @@ export function ImageGrid() {
         </div>
       </div>
 
-      {/* Image Detail Modal */}
-      {selectedImage && (
-        <Modal
-          isOpen={!!selectedImage}
-          onClose={() => setSelectedImage(null)}
-          className="max-w-5xl w-full mx-4"
-        >
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Image */}
-            <div className="flex-1">
-              <Image
-                src={selectedImage.imageUrl || selectedImage.url || ''}
-                alt={selectedImage.title}
-                width={600}
-                height={800}
-                className="w-full h-auto rounded-2xl"
-                unoptimized={true}
-                key={selectedImage.id} // Force re-render with same image
-                onError={(e) => {
-                  console.error('Modal image failed to load:', selectedImage.imageUrl || selectedImage.url)
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-            </div>
-
-            {/* Details Panel */}
-            <div className="w-full lg:w-96 space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">{selectedImage.title}</h2>
-                <div className="flex space-x-2">
-                  <Button variant="ghost" size="sm" className="hover:bg-gray-100">
-                    <Heart className="w-5 h-5" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-gray-100">
-                    <Share className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Save to Board */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Save to board</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {boards.map((board) => (
-                    <Button 
-                      key={board.id} 
-                      variant="outline" 
-                      size="sm" 
-                      className="justify-start h-12 text-left"
-                      onClick={async () => {
-                        await savePinToBoard(
-                          selectedImage.id.toString(), 
-                          board.id, 
-                          selectedImage.imageUrl || selectedImage.url || '', 
-                          selectedImage.title
-                        )
-                        alert(`Saved to ${board.name}!`)
-                      }}
-                    >
-                      <Bookmark className="w-4 h-4 mr-3" />
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">{board.name}</div>
-                        {board.description && (
-                          <div className="text-xs text-gray-500 truncate">{board.description}</div>
-                        )}
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-                <Button 
-                  className="w-full h-12"
-                  onClick={() => setShowCreateBoard(true)}
-                >
-                  <Bookmark className="w-4 h-4 mr-2" />
-                  Create New Board
-                </Button>
-              </div>
-
-              {/* Comments Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
-                <div className="space-y-4 max-h-64 overflow-y-auto">
-                  {(comments[selectedImage.id.toString()] || []).map((comment) => (
-                    <div key={comment.id} className="bg-gray-50 p-4 rounded-xl">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className="w-8 h-8 bg-pinterest-red rounded-full flex items-center justify-center text-sm text-white font-bold">
-                          {comment.author.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <span className="text-sm font-semibold text-gray-900">{comment.author}</span>
-                          <span className="text-xs text-gray-500 ml-2">
-                            {comment.createdAt.toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-800">{comment.text}</p>
-                    </div>
-                  ))}
-                  
-                  {(!comments[selectedImage.id.toString()] || comments[selectedImage.id.toString()].length === 0) && (
-                    <div className="text-center py-8">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                      </div>
-                      <p className="text-gray-500 text-sm">No comments yet. Be the first to comment!</p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Add Comment */}
-                <div className="flex space-x-3">
-                  <input
-                    type="text"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Add a comment..."
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pinterest-red focus:border-pinterest-red"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && comment.trim()) {
-                        addComment(selectedImage.id.toString(), comment.trim())
-                        setComment('')
-                      }
-                    }}
-                  />
-                  <Button 
-                    size="sm"
-                    className="px-6"
-                    onClick={() => {
-                      if (comment.trim()) {
-                        addComment(selectedImage.id.toString(), comment.trim())
-                        setComment('')
-                      }
-                    }}
-                  >
-                    Post
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Modal>
-      )}
+      {/* Swipeable Image Modal */}
+      <SwipeableImageModal
+        isOpen={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        images={[
+          ...pins.map(pin => ({ id: pin.id, url: pin.imageUrl, title: pin.title })),
+          ...SAMPLE_IMAGES.map(img => ({ id: img.id.toString(), url: img.url, title: img.title }))
+        ]}
+        currentIndex={selectedImageIndex}
+        onIndexChange={(index) => {
+          setSelectedImageIndex(index)
+          const allImages = [
+            ...pins.map(pin => ({ id: pin.id, imageUrl: pin.imageUrl, url: pin.imageUrl, title: pin.title, category: 'Pin' })),
+            ...SAMPLE_IMAGES.map(img => ({ id: img.id.toString(), imageUrl: img.url, url: img.url, title: img.title, category: img.category }))
+          ]
+          setSelectedImage(allImages[index])
+        }}
+      />
 
       {/* Create Board Modal */}
       <CreateBoardModal
