@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // First check if Supabase is configured
     if (!isSupabaseConfigured()) {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Test database connection by trying to count boards
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('boards')
       .select('count')
       .limit(1)
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Test storage connection
-    const { data: buckets, error: storageError } = await supabase
+    const { data: buckets } = await supabase
       .storage
       .listBuckets()
 
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({
       success: false,
-      error: `Connection failed: ${error.message}`,
+      error: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       configured: isSupabaseConfigured()
     }, { status: 500 })
   }
