@@ -126,14 +126,31 @@ export function ImageGrid() {
               <div className="space-y-3">
                 <h3 className="font-semibold text-gray-900">Save to board</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {['Travel', 'Home Decor', 'Recipes', 'Art & Design'].map((board) => (
-                    <Button key={board} variant="outline" size="sm" className="justify-start">
+                  {boards.map((board) => (
+                    <Button 
+                      key={board.id} 
+                      variant="outline" 
+                      size="sm" 
+                      className="justify-start"
+                      onClick={() => {
+                        savePinToBoard(
+                          selectedImage.id.toString(), 
+                          board.id, 
+                          selectedImage.url, 
+                          selectedImage.title
+                        )
+                        alert(`Saved to ${board.name}!`)
+                      }}
+                    >
                       <Bookmark className="w-4 h-4 mr-2" />
-                      {board}
+                      {board.name}
                     </Button>
                   ))}
                 </div>
-                <Button className="w-full">
+                <Button 
+                  className="w-full"
+                  onClick={() => setShowCreateBoard(true)}
+                >
                   <Bookmark className="w-4 h-4 mr-2" />
                   Create New Board
                 </Button>
@@ -143,40 +160,65 @@ export function ImageGrid() {
               <div className="space-y-3">
                 <h3 className="font-semibold text-gray-900">Comments</h3>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
-                        J
+                  {(comments[selectedImage.id.toString()] || []).map((comment) => (
+                    <div key={comment.id} className="bg-gray-50 p-3 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                          {comment.author.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-sm font-medium">{comment.author}</span>
                       </div>
-                      <span className="text-sm font-medium">john_doe</span>
+                      <p className="text-sm text-gray-800">{comment.text}</p>
                     </div>
-                    <p className="text-sm text-gray-800">Beautiful shot! Love the composition.</p>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
-                        S
-                      </div>
-                      <span className="text-sm font-medium">sarah_m</span>
-                    </div>
-                    <p className="text-sm text-gray-800">Adding this to my inspiration board!</p>
-                  </div>
+                  ))}
+                  
+                  {(!comments[selectedImage.id.toString()] || comments[selectedImage.id.toString()].length === 0) && (
+                    <p className="text-gray-500 text-sm text-center py-4">No comments yet. Be the first to comment!</p>
+                  )}
                 </div>
                 
                 {/* Add Comment */}
                 <div className="flex space-x-2">
                   <input
                     type="text"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
                     placeholder="Add a comment..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && comment.trim()) {
+                        addComment(selectedImage.id.toString(), comment.trim())
+                        setComment('')
+                      }
+                    }}
                   />
-                  <Button size="sm">Post</Button>
+                  <Button 
+                    size="sm"
+                    onClick={() => {
+                      if (comment.trim()) {
+                        addComment(selectedImage.id.toString(), comment.trim())
+                        setComment('')
+                      }
+                    }}
+                  >
+                    Post
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </Modal>
       )}
+
+      {/* Create Board Modal */}
+      <CreateBoardModal
+        isOpen={showCreateBoard}
+        onClose={() => setShowCreateBoard(false)}
+        onCreateBoard={(name, description) => {
+          createBoard(name, description)
+          alert(`Board "${name}" created successfully!`)
+        }}
+      />
     </>
   )
 }
