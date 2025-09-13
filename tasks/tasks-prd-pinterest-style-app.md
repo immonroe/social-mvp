@@ -59,14 +59,14 @@
   - [x] 1.5 Set up basic folder structure for components, pages, and utilities
   - [x] 1.6 Install additional dependencies (clsx, lucide-react for icons)
 
-- [ ] 2.0 **Database Schema and Supabase Configuration**
-  - [ ] 2.1 Create users table (if extending Supabase auth.users)
-  - [ ] 2.2 Create boards table with user_id, name, description, created_at
-  - [ ] 2.3 Create images table with user_id, filename, url, created_at
-  - [ ] 2.4 Create board_pins junction table for many-to-many relationship
-  - [ ] 2.5 Set up Row Level Security (RLS) policies for all tables
-  - [ ] 2.6 Configure Supabase Storage bucket for image uploads
-  - [ ] 2.7 Create database helper functions and TypeScript types
+- [x] 2.0 **Database Schema and Supabase Configuration**
+  - [x] 2.1 Create users table (if extending Supabase auth.users)
+  - [x] 2.2 Create boards table with user_id, name, description, created_at
+  - [x] 2.3 Create images table with user_id, filename, url, created_at
+  - [x] 2.4 Create board_pins junction table for many-to-many relationship
+  - [x] 2.5 Set up Row Level Security (RLS) policies for all tables
+  - [x] 2.6 Configure Supabase Storage bucket for image uploads
+  - [x] 2.7 Create database helper functions and TypeScript types
 
 - [ ] 3.0 **Authentication System Implementation**
   - [ ] 3.1 Create Supabase client configuration with auth helpers
