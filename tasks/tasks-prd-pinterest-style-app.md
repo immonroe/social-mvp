@@ -54,7 +54,7 @@
 - [ ] 1.0 **Project Setup and Configuration**
   - [x] 1.1 Initialize Next.js project with TypeScript and Tailwind CSS
   - [x] 1.2 Install and configure Supabase client library
-  - [ ] 1.3 Set up environment variables for Supabase connection
+  - [x] 1.3 Set up environment variables for Supabase connection
   - [ ] 1.4 Configure Next.js for image optimization and external domains
   - [ ] 1.5 Set up basic folder structure for components, pages, and utilities
   - [ ] 1.6 Install additional dependencies (clsx, lucide-react for icons)
