@@ -26,12 +26,13 @@ export async function GET() {
       }, { status: 500 })
     }
 
-    // Test storage connection
-    const { data: buckets } = await supabase
+    // Test storage connection by accessing images bucket directly
+    const { error: storageError } = await supabase
       .storage
-      .listBuckets()
+      .from('images')
+      .list()
 
-    const imagesBucket = buckets?.find(bucket => bucket.name === 'images')
+    const imagesBucket = !storageError
 
     return NextResponse.json({
       success: true,
