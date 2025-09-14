@@ -48,8 +48,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         type: 'board' as const,
         id: board.id,
         title: board.name,
-        description: board.description,
-        createdAt: board.createdAt
+        description: board.description || undefined,
+        createdAt: new Date(board.created_at)
       }))
 
     // Search through pins

@@ -1,27 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Button } from '@/components/ui/Button'
 import { ImageGrid } from '@/components/ImageGrid'
 import { useBoards } from '@/contexts/BoardContext'
 import { AlertCircle } from 'lucide-react'
 import { Layout } from '@/components/layout/Layout'
-import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 export default function Home() {
-  const [user, setUser] = useState<SupabaseUser | null>(null)
-  const [loading, setLoading] = useState(true)
   const { error: boardError } = useBoards()
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
-    }
-    checkUser()
-  }, [])
 
   return (
     <Layout>

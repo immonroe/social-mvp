@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/contexts/AuthContext'
 import { useBoards } from '@/contexts/BoardContext'
@@ -99,7 +100,7 @@ export default function ProfilePage() {
               ) : (
                 pins.map((pin) => (
                   <div key={pin.id} className="break-inside-avoid bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
-                    <img src={pin.imageUrl} alt={pin.title} className="w-full h-auto" />
+                    <Image src={pin.imageUrl} alt={pin.title} width={300} height={400} className="w-full h-auto" unoptimized />
                     <div className="p-3">
                       <p className="text-sm font-medium text-gray-900">{pin.title}</p>
                       <p className="text-xs text-gray-500 mt-1">

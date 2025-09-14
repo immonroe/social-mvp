@@ -3,12 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Modal } from './ui/Modal'
 import { SwipeableImageModal } from './ui/SwipeableImageModal'
 import { Button } from './ui/Button'
 import { CreateBoardModal } from './CreateBoardModal'
 import { useBoards } from '@/contexts/BoardContext'
-import { Heart, Bookmark, Share } from 'lucide-react'
+import { Heart, Bookmark } from 'lucide-react'
 
 // Pinterest-style mock content with realistic categories and descriptions
 const SAMPLE_IMAGES = [
@@ -109,8 +108,7 @@ export function ImageGrid() {
   const [selectedImage, setSelectedImage] = useState<{id: string | number, imageUrl?: string, url?: string, title: string, category?: string} | null>(null)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [showCreateBoard, setShowCreateBoard] = useState(false)
-  const [comment, setComment] = useState('')
-  const { boards, pins, createBoard, savePinToBoard, addComment, comments, loading } = useBoards()
+  const { pins, createBoard, loading } = useBoards()
 
   if (loading) {
     return (

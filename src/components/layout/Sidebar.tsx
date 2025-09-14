@@ -6,15 +6,11 @@ import { Button } from '../ui/Button'
 import { useAuth } from '@/contexts/AuthContext'
 import { 
   Home, 
-  Search, 
   User, 
   LogOut, 
   Upload, 
   PlusIcon, 
-  Bookmark,
-  MessageCircle,
-  Bell,
-  Settings
+  Bookmark
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 

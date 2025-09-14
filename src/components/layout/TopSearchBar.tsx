@@ -4,13 +4,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Search, X, Grid3X3, Image as ImageIcon } from 'lucide-react'
 import { useSearch } from '@/contexts/SearchContext'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 
 export function TopSearchBar() {
   const { searchQuery, setSearchQuery, searchResults, isSearching, performSearch, clearSearch } = useSearch()
   const [showResults, setShowResults] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -45,7 +43,7 @@ export function TopSearchBar() {
     }
   }
 
-  const handleResultClick = (result: any) => {
+  const handleResultClick = (result: { type: string; id: string; boardName?: string }) => {
     if (result.type === 'board') {
       router.push(`/boards/${result.id}`)
     } else if (result.type === 'pin') {
@@ -67,8 +65,6 @@ export function TopSearchBar() {
                 placeholder="Search for ideas..."
                 value={searchQuery}
                 onChange={handleInputChange}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                 className="w-full h-12 px-6 pr-12 text-base rounded-full border-2 border-gray-300 focus:border-pinterest-red focus:outline-none focus:ring-4 focus:ring-pinterest-red/10 transition-all duration-200 shadow-sm"
               />
               <button 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from './Button'
@@ -57,7 +57,7 @@ export function SwipeableImageModal({
     }
   }, [isOpen])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentIndex < images.length - 1 && !isTransitioning) {
       setIsTransitioning(true)
       setTimeout(() => {
@@ -65,9 +65,9 @@ export function SwipeableImageModal({
         setIsTransitioning(false)
       }, 150)
     }
-  }
+  }, [currentIndex, images.length, isTransitioning, onIndexChange])
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentIndex > 0 && !isTransitioning) {
       setIsTransitioning(true)
       setTimeout(() => {
@@ -75,9 +75,9 @@ export function SwipeableImageModal({
         setIsTransitioning(false)
       }, 150)
     }
-  }
+  }, [currentIndex, isTransitioning, onIndexChange])
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       onClose()
     } else if (e.key === 'ArrowLeft') {
@@ -85,14 +85,14 @@ export function SwipeableImageModal({
     } else if (e.key === 'ArrowRight') {
       handleNext()
     }
-  }
+  }, [onClose, handlePrevious, handleNext])
 
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown)
       return () => document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, currentIndex, isTransitioning])
+  }, [isOpen, currentIndex, isTransitioning, handleKeyDown])
 
   if (!isOpen || images.length === 0) return null
 
